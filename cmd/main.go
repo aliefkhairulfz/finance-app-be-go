@@ -34,6 +34,11 @@ func main() {
 
 	// ROUTES
 	r := chi.NewRouter()
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
+
 	r.Route("/api", func(r chi.Router) {
 		r.Use(middlewares.CorsMiddleware)
 		auth.NewHandler(r, authService)

@@ -6,28 +6,44 @@ import (
 	"finance-app/internal/auth"
 	"finance-app/internal/repository"
 	middlewares "finance-app/middleware"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// LOAD ENV
+	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
+		_ = godotenv.Load()
+	}
+
+	// DB CONNECTION
 	makeConnection := &db.Connection{}
 	pgxPool, err := makeConnection.Connect(context.Background())
 	if err != nil {
 		panic(err)
 	}
-
 	defer pgxPool.Close()
 
+	// MODULES
 	repository := repository.New(pgxPool)
 	authService := auth.NewService(repository)
 
+	// ROUTES
 	r := chi.NewRouter()
 	r.Route("/api", func(r chi.Router) {
 		r.Use(middlewares.CorsMiddleware)
 		auth.NewHandler(r, authService)
 	})
 
-	http.ListenAndServe(":8000", r)
+	// PORT
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
+	log.Println("Server running on port", port)
+	http.ListenAndServe(":"+port, r)
 }

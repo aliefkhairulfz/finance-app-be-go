@@ -6,19 +6,14 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 type Connection struct{}
 
 func (c *Connection) Connect(ctx context.Context) (*pgxpool.Pool, error) {
-	if err := godotenv.Load(); err != nil {
-		return nil, err
-	}
-
-	dsn := os.Getenv("DB_CONNECTION_STRING")
+	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		return nil, fmt.Errorf("DB_CONNECTION_STRING is not set")
+		return nil, fmt.Errorf("DATABASE_URL is not set")
 	}
 
 	pool, err := pgxpool.New(ctx, dsn)

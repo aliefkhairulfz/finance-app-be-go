@@ -1,0 +1,41 @@
+services:
+  api:
+    build: .
+    container_name: finance-app-api
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      DATABASE_URL: postgresql://aliefkhairulfadzli:postgres@db:5432/finance_app_db?sslmode=disable
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: finance-app-db
+    environment:
+      POSTGRES_USER: aliefkhairulfadzli
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: finance_app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  migrate:
+    image: migrate/migrate
+    container_name: finance-app-migrate
+    depends_on:
+      - db
+    volumes:
+      - ./db/migrations:/migrations
+    command: >
+      -path /migrations
+      -database postgresql://aliefkhairulfadzli:postgres@db:5432/finance_app_db?sslmode=disable
+      up
+    restart: "no"
+
+volumes:
+  postgres_data:

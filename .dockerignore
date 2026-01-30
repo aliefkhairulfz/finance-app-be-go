@@ -1,0 +1,5 @@
+.env
+.air.toml
+.git
+tmp
+*.log

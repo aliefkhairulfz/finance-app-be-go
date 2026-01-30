@@ -12,20 +12,19 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	// LOAD ENV
-	if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
-		_ = godotenv.Load()
-	}
+	// // LOAD ENV
+	// if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
+	// 	_ = godotenv.Load()
+	// }
 
 	// DB CONNECTION
 	makeConnection := &db.Connection{}
 	pgxPool, err := makeConnection.Connect(context.Background())
 	if err != nil {
-		log.Println("failed to connect database:", err)
+		log.Fatalf("failed to connect database: %v", err)
 	}
 	defer pgxPool.Close()
 

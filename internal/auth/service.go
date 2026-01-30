@@ -2,12 +2,13 @@ package auth
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"finance-app/internal/repository"
 	"finance-app/lib"
 	"finance-app/utils"
 	"fmt"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type SignUpParams struct {
@@ -57,7 +58,7 @@ func (s *Service) SignUp(ctx context.Context, args SignUpParams) (*repository.Cr
 	fUser, err := s.repository.FindUserByEmail(ctx, args.Email)
 	if err != nil {
 		// CREATE NEW USER AND ACCOUNT IF ROWS NOT FOUND
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			uPayload := repository.CreateUserParams{
 				Name:  args.Name,
 				Email: args.Email,
@@ -95,7 +96,7 @@ func (s *Service) SignUp(ctx context.Context, args SignUpParams) (*repository.Cr
 	_, err = s.repository.FindAccountByUserIdAndProviderID(ctx, fAccPayload)
 	if err != nil {
 		// CREATE NEW ACCOUNT WITH SAME ID
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			accPayload := repository.CreateAccountParams{
 				UserID:     fUser.ID,
 				Password:   hash,
@@ -122,7 +123,7 @@ func (s *Service) SignIn(ctx context.Context, args SignInParams, meta SignInUser
 	// FIND USER
 	fUser, err := s.repository.FindUserByEmail(ctx, args.Email)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, utils.ErrorEmailNotFound
 		}
 		return nil, err
@@ -143,7 +144,7 @@ func (s *Service) SignIn(ctx context.Context, args SignInParams, meta SignInUser
 
 	fAcc, err := s.repository.FindAccountByUserIdAndProviderID(ctx, fAccPayload)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, utils.ErrorAccountNotFound
 		}
 		return nil, err
@@ -159,7 +160,7 @@ func (s *Service) SignIn(ctx context.Context, args SignInParams, meta SignInUser
 	_, err = s.repository.FindSessionByUserId(ctx, fUser.ID)
 	if err != nil {
 		// CREATE NEW SESSION IF NOT FOUND
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			cSession, err := CreateSession(ctx, s, cSessionPayload)
 			if err != nil {
 				return nil, err
@@ -187,7 +188,7 @@ func (s *Service) SignIn(ctx context.Context, args SignInParams, meta SignInUser
 func (s *Service) Me(ctx context.Context, token string) (*repository.FindUserByIdRow, error) {
 	fSession, err := s.repository.FindSessionByToken(ctx, token)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, utils.ErrorSessionNotFound
 		}
 		return nil, err
@@ -195,7 +196,7 @@ func (s *Service) Me(ctx context.Context, token string) (*repository.FindUserByI
 
 	fUser, err := s.repository.FindUserById(ctx, fSession.UserID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, utils.ErrorNoUserFound
 		}
 	}

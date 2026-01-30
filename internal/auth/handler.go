@@ -5,6 +5,7 @@ import (
 	"errors"
 	middlewares "finance-app/middleware"
 	"finance-app/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -18,6 +19,9 @@ func NewHandler(r chi.Router, service ServiceHandler) {
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/sign-up", func(w http.ResponseWriter, r *http.Request) {
 			var reqBody SignUpParams
+			fmt.Println(reqBody.Email)
+			fmt.Println(reqBody.Password)
+
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return

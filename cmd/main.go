@@ -6,6 +6,7 @@ import (
 	"finance-app/internal/auth"
 	"finance-app/internal/repository"
 	middlewares "finance-app/middleware"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -36,6 +37,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
+		fmt.Println("health is ok")
 		w.Write([]byte("ok"))
 	})
 

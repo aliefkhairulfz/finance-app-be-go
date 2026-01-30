@@ -7,6 +7,7 @@ import (
 	"finance-app/internal/repository"
 	"finance-app/lib"
 	"finance-app/utils"
+	"fmt"
 )
 
 type SignUpParams struct {
@@ -49,6 +50,8 @@ func (s *Service) SignUp(ctx context.Context, args SignUpParams) (*repository.Cr
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(args.Email)
+	fmt.Println(args.Password)
 
 	// FIND USER
 	fUser, err := s.repository.FindUserByEmail(ctx, args.Email)

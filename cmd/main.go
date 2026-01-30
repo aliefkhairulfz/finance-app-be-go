@@ -24,7 +24,7 @@ func main() {
 	makeConnection := &db.Connection{}
 	pgxPool, err := makeConnection.Connect(context.Background())
 	if err != nil {
-		panic(err)
+		log.Println("failed to connect database:", err)
 	}
 	defer pgxPool.Close()
 

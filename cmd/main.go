@@ -44,6 +44,6 @@ func main() {
 	if port == "" {
 		port = "8000"
 	}
-	log.Println("Server running on port", port)
+	log.Println("Server running production, on port", port)
 	http.ListenAndServe(":"+port, r)
 }

@@ -10,7 +10,7 @@ func SetCookie(w http.ResponseWriter, token string) {
 		MaxAge:   3600,
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 	}
 
 	http.SetCookie(w, &cookie)
@@ -24,7 +24,7 @@ func SetCsrfCookie(w http.ResponseWriter, token string) {
 		MaxAge:   3600,
 		HttpOnly: false,
 		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteNoneMode,
 	}
 
 	http.SetCookie(w, &cookie)

@@ -12,13 +12,11 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	// // LOAD ENV
-	// if os.Getenv("RAILWAY_ENVIRONMENT") == "" {
-	// 	_ = godotenv.Load()
-	// }
+	_ = godotenv.Load()
 
 	// DB CONNECTION
 	makeConnection := &db.Connection{}
